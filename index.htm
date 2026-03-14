@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fi"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harjoitellaan englantia!</title>
+<link href="Harjoitellaan%20englantia!_files/css2.css" rel="stylesheet">
+<style>
+  :root{--pink:#FF6FAD;--pink-light:#FFD6E8;--pink-dark:#D44D8A;--purple:#9B5DE5;--purple-light:#E8D5FF;--purple-dark:#6B3DB0;--gold:#FFD700;--gold-dark:#E6A800;--green:#2ECC71;--green-light:#E8FFE8;--red:#E74C3C;--red-light:#FFE8E8;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#FFD6EC 0%,#E4D4FF 50%,#D4EEFF 100%);min-height:100vh;padding:16px;}
+  .container{max-width:480px;margin:0 auto;}
+
+  /* HEADER */
+  .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .logo{font-family:'Fredoka One',cursive;font-size:21px;color:var(--pink);line-height:1.2;}
+  .stars-badge{background:linear-gradient(135deg,#FFD700,#FFA500);color:white;padding:8px 16px;border-radius:50px;font-weight:900;font-size:18px;box-shadow:0 4px 12px rgba(255,165,0,0.35);}
+  .stars-badge.bump{animation:starBump 0.4s ease;}
+  @keyframes starBump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+
+  /* SCREENS */
+  .screen{display:none;}
+  .screen.active{display:block;animation:fadeIn 0.3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* HOME */
+  .home-hero{text-align:center;margin-bottom:24px;}
+  .home-hero .hero-emoji{font-size:52px;display:block;margin-bottom:8px;}
+  .home-hero h1{font-family:'Fredoka One',cursive;font-size:28px;color:var(--purple);}
+  .home-hero p{color:#888;font-weight:700;font-size:14px;margin-top:4px;}
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+  .cat-card{border-radius:20px;padding:18px 12px;text-align:center;border:3px solid transparent;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;box-shadow:0 4px 15px rgba(0,0,0,0.08);background:white;}
+  .cat-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,0.12);}
+  .cat-card.selected{border-color:var(--cat-color,var(--pink));background:var(--cat-bg,#FFD6E8);}
+  .cat-card .cat-emoji{font-size:32px;display:block;margin-bottom:6px;}
+  .cat-card .cat-name{font-weight:800;font-size:13px;color:#333;}
+  .cat-card .cat-count{font-size:11px;color:#999;margin-top:2px;}
+  .cat-card.selected .cat-name,.cat-card.selected .cat-count{color:var(--cat-color,var(--pink));}
+
+  /* MODE PANEL */
+  .mode-panel{background:white;border-radius:20px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:12px;display:none;}
+  .mode-panel.visible{display:block;animation:fadeIn 0.3s ease;}
+  .mode-panel-title{font-weight:800;text-align:center;color:#555;font-size:15px;margin-bottom:14px;}
+  .mode-btns{display:flex;gap:12px;}
+  .mode-btn{flex:1;border:none;border-radius:16px;padding:16px 8px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 12px rgba(0,0,0,0.15);color:white;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .mode-btn:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+  .mode-btn:active{transform:scale(0.97);}
+  .mode-btn .mode-emoji{font-size:28px;}
+  .mode-btn.quiz-mode{background:linear-gradient(135deg,#FF6FAD,#D44D8A);}
+  .mode-btn.type-mode{background:linear-gradient(135deg,#9B5DE5,#6B3DB0);}
+  .mode-hint{text-align:center;color:#bbb;font-size:11px;margin-top:10px;font-weight:600;}
+
+  /* PROGRESS */
+  .prog-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prog-label{font-weight:700;color:#666;font-size:13px;}
+  .prog-num{font-weight:800;font-size:13px;}
+  .prog-bar{height:10px;border-radius:99px;background:rgba(255,255,255,0.6);overflow:hidden;margin-bottom:16px;}
+  .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width 0.4s ease;}
+  .streak-bar{display:flex;gap:5px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+  .streak-dot{width:11px;height:11px;border-radius:50%;border:2px solid #ddd;background:#f0f0f0;transition:all 0.3s;}
+  .streak-dot.right{background:var(--gold);border-color:var(--gold-dark);transform:scale(1.1);}
+  .streak-dot.wrong{background:var(--red);border-color:#c0392b;}
+
+  /* SHARED QUESTION CARD */
+  .quiz-q{background:white;border:3px solid var(--pink);border-radius:24px;padding:24px;text-align:center;margin-bottom:18px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+  .q-label{font-size:12px;font-weight:700;color:#bbb;letter-spacing:1px;margin-bottom:8px;}
+  .q-word{font-size:36px;font-weight:900;color:var(--pink);}
+
+  /* MULTIPLE CHOICE */
+  .answers{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .ans-btn{display:flex;align-items:center;gap:12px;background:white;border:3px solid transparent;border-radius:16px;padding:14px 16px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 3px 10px rgba(0,0,0,0.07);text-align:left;width:100%;}
+  .ans-btn:not([disabled]):hover{transform:translateY(-2px);border-color:var(--pink);box-shadow:0 6px 16px rgba(0,0,0,0.1);}
+  .ans-letter{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0;background:#f0f0f0;color:#888;}
+  .ans-btn.correct{background:var(--green-light);border-color:var(--green);animation:bounceIn 0.3s ease;}
+  .ans-btn.correct .ans-letter{background:var(--green);color:white;}
+  .ans-btn.wrong{background:var(--red-light);border-color:var(--red);animation:shake 0.4s ease;}
+  .ans-btn.wrong .ans-letter{background:var(--red);color:white;}
+  .ans-btn.reveal-correct{background:var(--green-light);border-color:var(--green);}
+  .ans-btn.reveal-correct .ans-letter{background:var(--green);color:white;}
+
+  /* TYPING MODE */
+  .type-input-wrap{margin-bottom:14px;}
+  .type-input{width:100%;border:3px solid #e0d0f0;border-radius:16px;padding:18px 20px;font-family:'Nunito',sans-serif;font-size:24px;font-weight:800;text-align:center;outline:none;transition:border-color 0.2s,box-shadow 0.2s;background:white;color:#333;}
+  .type-input:focus{border-color:var(--purple);box-shadow:0 0 0 4px rgba(155,93,229,0.15);}
+  .type-input.correct-input{border-color:var(--green);background:var(--green-light);color:#1a9950;animation:bounceIn 0.3s ease;}
+  .type-input.wrong-input{border-color:var(--red);background:var(--red-light);color:#c0392b;animation:shake 0.4s ease;}
+  .type-hint{text-align:center;color:#bbb;font-size:12px;font-weight:700;margin-bottom:14px;}
+  .check-btn{border:none;border-radius:50px;padding:16px 48px;font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:white;background:linear-gradient(135deg,var(--purple),var(--purple-dark));box-shadow:0 6px 20px rgba(107,61,176,0.35);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;display:block;margin:0 auto 14px;}
+  .check-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(107,61,176,0.45);}
+  .check-btn:active{transform:scale(0.97);}
+  .check-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+  /* FEEDBACK */
+  .feedback{border-radius:16px;padding:12px 18px;font-weight:800;font-size:16px;text-align:center;margin-bottom:12px;}
+  .feedback.ok{background:var(--green-light);color:#1a9950;}
+  .feedback.bad{background:var(--red-light);color:#c0392b;}
+  .star-delta{display:inline-block;margin-left:6px;animation:deltaFloat 1.4s ease-out forwards;}
+  @keyframes deltaFloat{0%{opacity:1;transform:translateY(0)}80%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+
+  @keyframes bounceIn{0%{transform:scale(0.9)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  /* BUTTONS */
+  .next-btn{border:none;border-radius:50px;padding:16px 40px;font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:white;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 6px 20px rgba(155,93,229,0.3);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;display:block;margin:0 auto;}
+  .next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(155,93,229,0.4);}
+  .next-btn:active{transform:scale(0.97);}
+  .back-btn{display:block;margin:16px auto 0;border:3px solid var(--pink);border-radius:50px;padding:10px 28px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--pink);background:white;cursor:pointer;transition:all 0.15s;}
+  .back-btn:hover{background:var(--pink-light);}
+
+  /* RESULTS */
+  .results{text-align:center;padding:10px 0;}
+  .results .big-emoji{font-size:72px;margin-bottom:12px;}
+  .results h2{font-family:'Fredoka One',cursive;font-size:30px;color:var(--purple);margin-bottom:6px;}
+  .results .msg{font-weight:800;font-size:17px;color:#555;margin-bottom:20px;}
+  .score-box{border:3px solid;border-radius:20px;padding:20px;margin-bottom:16px;}
+  .score-num{font-size:52px;font-weight:900;}
+  .score-label{font-weight:700;color:#888;}
+  .stars-total-box{background:linear-gradient(135deg,#FFF8E1,#FFFDE7);border:2px solid var(--gold);border-radius:16px;padding:12px;margin-bottom:24px;font-weight:800;color:#e6a800;font-size:16px;}
+  .result-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .retry-btn{border:none;border-radius:50px;padding:14px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:white;cursor:pointer;transition:all 0.15s;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .retry-btn:hover{transform:translateY(-2px);}
+
+  /* MILESTONE */
+  .overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.4s;}
+  .overlay.show{opacity:1;pointer-events:all;}
+  .overlay-bg{position:absolute;inset:0;background:rgba(0,0,0,0.65);}
+  .milestone-box{position:relative;border-radius:32px;padding:32px 28px;text-align:center;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.4);animation:popIn 0.55s cubic-bezier(.34,1.56,.64,1) forwards;}
+  @keyframes popIn{from{transform:scale(0.4) rotate(-8deg)}to{transform:scale(1) rotate(0deg)}}
+  .milestone-box h2{font-family:'Fredoka One',cursive;font-size:28px;margin-bottom:8px;}
+  .milestone-box p{font-weight:700;font-size:15px;line-height:1.6;margin-bottom:24px;white-space:pre-line;}
+  .ms-main-emoji{font-size:80px;display:block;margin-bottom:12px;animation:wiggle 0.7s ease infinite alternate;}
+  @keyframes wiggle{from{transform:rotate(-10deg) scale(1)}to{transform:rotate(10deg) scale(1.12)}}
+  .ms-close-btn{border:none;border-radius:50px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;transition:transform 0.15s;box-shadow:0 6px 18px rgba(0,0,0,0.25);color:white;}
+  .ms-close-btn:hover{transform:scale(1.06);}
+  .floating-emojis{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:32px;}
+  .fe{position:absolute;font-size:22px;animation:floatUp 2.8s ease-in-out infinite;}
+  @keyframes floatUp{0%{opacity:0;transform:translateY(10px)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translateY(-90px)}}
+
+  /* SPARKLES */
+  #sparkles{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+  .sparkle-el{position:absolute;animation:spkFall 1.2s ease-out forwards;}
+  @keyframes spkFall{0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}100%{opacity:0;transform:translateY(110px) rotate(360deg) scale(0.3)}}
+</style>
+</head>
+<body>
+<div id="sparkles"></div>
+
+<!-- MILESTONE OVERLAY -->
+<div class="overlay" id="milestone-overlay">
+  <div class="overlay-bg" onclick="closeMilestone()"></div>
+  <div class="milestone-box" id="milestone-box">
+    <div class="floating-emojis" id="floating-emojis"></div>
+    <span class="ms-main-emoji" id="ms-emoji">🎤</span>
+    <h2 id="ms-title" style="color:white"></h2>
+    <p id="ms-msg" style="color:white"></p>
+    <button class="ms-close-btn" id="ms-close-btn" onclick="closeMilestone()">Jatketaan!</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">Harjoitellaan<br>englantia! ✨</div>
+    <div class="stars-badge" id="stars-badge">⭐ <span id="stars-count">0</span></div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="home-hero">
+      <span class="hero-emoji">🐴💄🌟</span>
+      <h1>Valitse aihe!</h1>
+      <p>Napauta aihetta ja valitse harjoittelutapa</p>
+    </div>
+    <div class="cat-grid" id="cat-grid"><div class="cat-card" style="--cat-color: #FF6FAD; --cat-bg: #FFD6E8;" id="cat-adj"><span class="cat-emoji">🌈</span><div class="cat-name">Adjektiivit</div><div class="cat-count">16 sanaa</div></div><div class="cat-card" style="--cat-color: #9B5DE5; --cat-bg: #E8D5FF;" id="cat-school"><span class="cat-emoji">✏️</span><div class="cat-name">Kouluvälineet</div><div class="cat-count">12 sanaa</div></div><div class="cat-card" style="--cat-color: #00BBF9; --cat-bg: #D5F4FF;" id="cat-days"><span class="cat-emoji">📅</span><div class="cat-name">Viikonpäivät</div><div class="cat-count">7 sanaa</div></div><div class="cat-card" style="--cat-color: #F77F00; --cat-bg: #FFE8C5;" id="cat-animals"><span class="cat-emoji">🦁</span><div class="cat-name">Eläimet</div><div class="cat-count">12 sanaa</div></div><div class="cat-card" style="--cat-color: #E74C3C; --cat-bg: #FFE8E8;" id="cat-all"><span class="cat-emoji">🌟</span><div class="cat-name">Kaikki sanat! 🏆</div><div class="cat-count">47 sanaa</div></div></div>
+    <div class="mode-panel" id="mode-panel">
+      <div class="mode-panel-title">🎮 Miten harjoitellaan?</div>
+      <div class="mode-btns">
+        <button class="mode-btn quiz-mode" onclick="startGame('quiz')">
+          <span class="mode-emoji">🎯</span>
+          Monivalinta
+        </button>
+        <button class="mode-btn type-mode" onclick="startGame('type')">
+          <span class="mode-emoji">✏️</span>
+          Kirjoita itse
+        </button>
+      </div>
+      <div class="mode-hint">Monivalinta: valitse oikea • Kirjoita: näppäile englanniksi</div>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="screen-quiz">
+    <div class="prog-row">
+      <span class="prog-label" id="qz-cat-label">🌈 Adjektiivit</span>
+      <span class="prog-num" id="qz-prog" style="color:var(--pink)">1 / 12</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="qz-bar" style="width:0%"></div></div>
+    <div class="streak-bar" id="qz-streak"></div>
+    <div class="quiz-q" id="quiz-q">
+      <div class="q-label">MIKÄ ON ENGLANNIKSI?</div>
+      <div class="q-word" id="qz-word">pieni</div>
+    </div>
+    <div class="answers" id="answers"></div>
+    <div id="qz-feedback" style="display:none"></div>
+    <div style="text-align:center;display:none" id="qz-next-wrap">
+      <button class="next-btn" id="qz-next-btn" onclick="qzNext()">Seuraava →</button>
+    </div>
+    <button class="back-btn" onclick="goHome()">🏠 Takaisin</button>
+  </div>
+
+  <!-- TYPING SCREEN -->
+  <div class="screen" id="screen-type">
+    <div class="prog-row">
+      <span class="prog-label" id="tp-cat-label">🌈 Adjektiivit</span>
+      <span class="prog-num" id="tp-prog" style="color:var(--purple)">1 / 12</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="tp-bar" style="width:0%"></div></div>
+    <div class="streak-bar" id="tp-streak"></div>
+    <div class="quiz-q" id="type-q" style="border-color:var(--purple)">
+      <div class="q-label">KIRJOITA ENGLANNIKSI</div>
+      <div class="q-word" id="tp-word" style="color:var(--purple)">pieni</div>
+    </div>
+    <div class="type-input-wrap">
+      <input class="type-input" id="type-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="Kirjoita tähän...">
+    </div>
+    <div class="type-hint" id="tp-hint">Paina Enter tai napauta Tarkista!</div>
+    <button class="check-btn" id="check-btn" onclick="checkTyping()">Tarkista! ✔</button>
+    <div id="tp-feedback" style="display:none"></div>
+    <div style="text-align:center;display:none" id="tp-next-wrap">
+      <button class="next-btn" id="tp-next-btn" onclick="tpNext()">Seuraava →</button>
+    </div>
+    <button class="back-btn" onclick="goHome()">🏠 Takaisin</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="results">
+      <div class="big-emoji" id="res-emoji">⭐⭐⭐</div>
+      <h2>Valmis!</h2>
+      <div class="msg" id="res-msg">Täydellinen!</div>
+      <div class="score-box" id="res-score-box">
+        <div class="score-num" id="res-score">8/8</div>
+        <div class="score-label">oikein</div>
+      </div>
+      <div class="stars-total-box">⭐ Yhteensä tähtiä: <span id="res-stars-total">0</span></div>
+      <div class="result-btns">
+        <button class="retry-btn" onclick="retryGame()" style="background:linear-gradient(135deg,var(--pink),var(--pink-dark))">🔄 Uudelleen</button>
+        <button class="retry-btn" onclick="goHome()" style="background:linear-gradient(135deg,var(--purple),var(--purple-dark))">🏠 Kotiin</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS=[
+  {id:'adj',name:'Adjektiivit',emoji:'🌈',color:'#FF6FAD',bg:'#FFD6E8',words:[
+    {fi:'pieni',en:'small'},{fi:'iso / suuri',en:'big'},{fi:'lyhyt',en:'short'},{fi:'pitkä / korkea',en:'tall'},
+    {fi:'nopea',en:'fast'},{fi:'hidas',en:'slow'},{fi:'hyvä',en:'good'},{fi:'huono / paha',en:'bad'},
+    {fi:'nuori',en:'young'},{fi:'vanha',en:'old'},{fi:'iloinen',en:'happy'},{fi:'surullinen',en:'sad'},
+    {fi:'vahva',en:'strong'},{fi:'heikko',en:'weak'},{fi:'kuuma',en:'hot'},{fi:'kylmä',en:'cold'}
+  ]},
+  {id:'school',name:'Kouluvälineet',emoji:'✏️',color:'#9B5DE5',bg:'#E8D5FF',words:[
+    {fi:'pyyhekumi',en:'a rubber'},{fi:'lyijykynä',en:'a pencil'},{fi:'kuulakärkikynä',en:'a pen'},{fi:'tussikynä',en:'a felt-tip pen'},
+    {fi:'viivain',en:'a ruler'},{fi:'vihko',en:'a notebook'},{fi:'kirja',en:'a book'},{fi:'teroitin',en:'a sharpener'},
+    {fi:'puhelin',en:'a phone'},{fi:'penaali',en:'a pencil case'},{fi:'värikynät',en:'crayons'},{fi:'sakset',en:'scissors'}
+  ]},
+  {id:'days',name:'Viikonpäivät',emoji:'📅',color:'#00BBF9',bg:'#D5F4FF',words:[
+    {fi:'maanantai',en:'Monday'},{fi:'tiistai',en:'Tuesday'},{fi:'keskiviikko',en:'Wednesday'},{fi:'torstai',en:'Thursday'},
+    {fi:'perjantai',en:'Friday'},{fi:'lauantai',en:'Saturday'},{fi:'sunnuntai',en:'Sunday'}
+  ]},
+  {id:'animals',name:'Eläimet',emoji:'🦁',color:'#F77F00',bg:'#FFE8C5',words:[
+    {fi:'leijona',en:'a lion'},{fi:'kirahvi',en:'a giraffe'},{fi:'tiikeri',en:'a tiger'},{fi:'norsu',en:'an elephant'},
+    {fi:'gorilla',en:'a gorilla'},{fi:'virtahepo',en:'a hippo'},{fi:'seepra',en:'a zebra'},{fi:'apina',en:'a monkey'},
+    {fi:'alligaattori',en:'an alligator'},{fi:'sarvikuono',en:'a rhino'},{fi:'papukaija',en:'a parrot'},{fi:'gepardi',en:'a cheetah'}
+  ]},
+  {id:'all',name:'Kaikki sanat! 🏆',emoji:'🌟',color:'#E74C3C',bg:'#FFE8E8',words:[]}
+];
+CATS[4].words=CATS.slice(0,4).flatMap(c=>c.words);
+
+const MILESTONES=[
+  {at:10,emoji:'🎤',title:'K-POP TÄHTI! 💜',
+   bg:'linear-gradient(135deg,#C850C0,#FF6FAD)',
+   msg:'BTS soittaa juuri sinulle!\nDynamite soikoon, idol! 💃🕺\n\nOlet niin cool!',
+   floaters:['🎤','🎵','💜','🌸','✨','🎧','💃','🕺','⭐','💖','🎶','🎼'],
+   btnBg:'#C850C0',btnTxt:'Saranghae! 💜'},
+  {at:50,emoji:'🐴',title:'HEVOSLEGENDA! 🏆',
+   bg:'linear-gradient(135deg,#6B3D14,#C47722,#F4A460)',
+   msg:'Olet ratsastanut läpi 50 tähden!\nGalloppaa eteenpäin, mestari! 🐎\n\nHiihoo!',
+   floaters:['🐴','🌟','🏆','🌈','🐎','⭐','🌻','💫','🎀','🌾','🍎','🥕'],
+   btnBg:'#8B4513',btnTxt:'Hiihoo! 🐴'},
+  {at:100,emoji:'👑',title:'100 TÄHTEÄ!! LEGENDA!!!',
+   bg:'linear-gradient(135deg,#FFD700,#FF6FAD,#9B5DE5,#00BBF9)',
+   msg:'SATA TÄHTEÄ!!!\nOlet ABSOLUUTTINEN SUPERJULMA\nMEGATÄHTI! 🎆🎇🎊\n\nKoko koulu on ylpeä sinusta!',
+   floaters:['👑','💥','🎆','🎇','🎉','🎊','🌟','💎','🦄','💖','🌈','⭐','🔥','💃','🏆','🎤','🐴','💄'],
+   btnBg:'#9B5DE5',btnTxt:'WOOOOOO!!! 🎉'}
+];
+
+let shownMilestones=new Set();
+let totalStars=0,selectedCatId=null,currentMode=null;
+let words=[],currentIdx=0,score=0,options=[],selectedOpt=null,streakResults=[];
+let typingAnswered=false;
+
+function getCat(){return CATS.find(c=>c.id===selectedCatId);}
+
+// HOME
+function buildHome(){
+  const grid=document.getElementById('cat-grid');
+  grid.innerHTML='';
+  CATS.forEach(cat=>{
+    const d=document.createElement('div');
+    d.className='cat-card';
+    d.style.setProperty('--cat-color',cat.color);
+    d.style.setProperty('--cat-bg',cat.bg);
+    d.innerHTML=`<span class="cat-emoji">${cat.emoji}</span><div class="cat-name">${cat.name}</div><div class="cat-count">${cat.words.length} sanaa</div>`;
+    d.onclick=()=>selectCat(cat.id);
+    d.id='cat-'+cat.id;
+    grid.appendChild(d);
+  });
+}
+
+function selectCat(id){
+  selectedCatId=id;
+  document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('cat-'+id).classList.add('selected');
+  document.getElementById('mode-panel').classList.add('visible');
+}
+
+// GAME START
+function startGame(mode){
+  currentMode=mode;
+  words=shuffle([...getCat().words]);
+  currentIdx=0;score=0;streakResults=[];selectedOpt=null;typingAnswered=false;
+  if(mode==='quiz') initQuiz();
+  else initTyping();
+}
+function retryGame(){startGame(currentMode);}
+
+// ── MULTIPLE CHOICE ──────────────────────────────────────────────────────────
+function initQuiz(){
+  const cat=getCat();
+  document.getElementById('qz-cat-label').textContent=cat.emoji+' '+cat.name;
+  document.getElementById('qz-cat-label').style.color=cat.color;
+  document.getElementById('quiz-q').style.borderColor=cat.color;
+  document.getElementById('qz-word').style.color=cat.color;
+  showScreen('quiz');
+  loadQuestion();
+}
+
+function loadQuestion(){
+  selectedOpt=null;
+  const w=words[currentIdx];
+  document.getElementById('qz-word').textContent=w.fi;
+  document.getElementById('qz-bar').style.width=(currentIdx/words.length*100)+'%';
+  document.getElementById('qz-prog').textContent=(currentIdx+1)+' / '+words.length;
+  document.getElementById('qz-feedback').style.display='none';
+  document.getElementById('qz-next-wrap').style.display='none';
+  buildStreak('qz-streak');
+
+  const pool=words.filter((_,i)=>i!==currentIdx);
+  options=shuffle([w,...shuffle(pool).slice(0,Math.min(3,pool.length))]);
+  const letters=['A','B','C','D'];
+  const div=document.getElementById('answers');
+  div.innerHTML='';
+  options.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='ans-btn';
+    btn.innerHTML=`<div class="ans-letter">${letters[i]}</div><span>${opt.en}</span>`;
+    btn.onclick=()=>answerQuiz(opt,btn,i);
+    div.appendChild(btn);
+  });
+}
+
+function answerQuiz(opt,btn,idx){
+  if(selectedOpt!==null)return;
+  selectedOpt=opt;
+  const correct=words[currentIdx];
+  const isRight=opt.en===correct.en;
+  document.querySelectorAll('.ans-btn').forEach((b,i)=>{
+    b.disabled=true;
+    if(options[i].en===correct.en)b.classList.add('reveal-correct');
+  });
+  if(isRight){
+    btn.classList.remove('reveal-correct');btn.classList.add('correct');
+    score++;streakResults.push(true);
+    awardStar(true,'qz-feedback','✨ Oikein! Mahtavaa!');
+  } else {
+    btn.classList.remove('reveal-correct');btn.classList.add('wrong');
+    streakResults.push(false);
+    awardStar(false,'qz-feedback','❌ Väärin. Oikea: "'+correct.en+'"');
+  }
+  document.getElementById('qz-next-wrap').style.display='block';
+  document.getElementById('qz-next-btn').textContent=currentIdx+1<words.length?'Seuraava →':'🎉 Valmis!';
+}
+
+function qzNext(){
+  if(currentIdx+1>=words.length)showResults();
+  else{currentIdx++;loadQuestion();}
+}
+
+// ── TYPING ───────────────────────────────────────────────────────────────────
+function initTyping(){
+  const cat=getCat();
+  document.getElementById('tp-cat-label').textContent=cat.emoji+' '+cat.name;
+  document.getElementById('tp-cat-label').style.color=cat.color;
+  document.getElementById('type-q').style.borderColor=cat.color;
+  document.getElementById('tp-word').style.color=cat.color;
+  showScreen('type');
+  loadTyping();
+}
+
+function loadTyping(){
+  typingAnswered=false;
+  const w=words[currentIdx];
+  document.getElementById('tp-word').textContent=w.fi;
+  document.getElementById('tp-bar').style.width=(currentIdx/words.length*100)+'%';
+  document.getElementById('tp-prog').textContent=(currentIdx+1)+' / '+words.length;
+  const inp=document.getElementById('type-input');
+  inp.value='';
+  inp.className='type-input';
+  inp.disabled=false;
+  document.getElementById('tp-feedback').style.display='none';
+  document.getElementById('tp-next-wrap').style.display='none';
+  document.getElementById('check-btn').style.display='block';
+  document.getElementById('check-btn').disabled=false;
+  document.getElementById('tp-hint').textContent='Paina Enter tai napauta Tarkista!';
+  buildStreak('tp-streak');
+  setTimeout(()=>inp.focus(),100);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('type-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter')checkTyping();
+  });
+});
+
+function checkTyping(){
+  if(typingAnswered)return;
+  const inp=document.getElementById('type-input');
+  const raw=inp.value.trim();
+  if(!raw)return;
+  typingAnswered=true;
+
+  const correct=words[currentIdx];
+  // Compare case-insensitively, but also handle "a/an" prefix gracefully
+  const normalize=s=>s.toLowerCase().trim().replace(/\s+/g,' ');
+  const isRight=normalize(raw)===normalize(correct.en);
+
+  inp.disabled=true;
+  document.getElementById('check-btn').style.display='none';
+  document.getElementById('tp-hint').textContent='';
+
+  if(isRight){
+    inp.classList.add('correct-input');
+    score++;streakResults.push(true);
+    awardStar(true,'tp-feedback','✨ Oikein! Mahtavaa!');
+    sparkle();
+  } else {
+    inp.classList.add('wrong-input');
+    streakResults.push(false);
+    awardStar(false,'tp-feedback','❌ Väärin. Oikea vastaus: "'+correct.en+'"');
+  }
+  document.getElementById('tp-next-wrap').style.display='block';
+  document.getElementById('tp-next-btn').textContent=currentIdx+1<words.length?'Seuraava →':'🎉 Valmis!';
+}
+
+function tpNext(){
+  if(currentIdx+1>=words.length)showResults();
+  else{currentIdx++;loadTyping();}
+}
+
+// ── SHARED ───────────────────────────────────────────────────────────────────
+function awardStar(isRight,feedbackId,text){
+  const starsBefore=totalStars;
+  if(isRight){
+    totalStars++;
+    document.getElementById(feedbackId).innerHTML=`<div class="feedback ok">${text} <span class="star-delta">+1 ⭐</span></div>`;
+    sparkle();
+  } else {
+    totalStars=Math.max(0,totalStars-1);
+    document.getElementById(feedbackId).innerHTML=`<div class="feedback bad">${text} <span class="star-delta" style="color:#c0392b">-1 ⭐</span></div>`;
+  }
+  document.getElementById(feedbackId).style.display='block';
+  updateStars();
+  checkMilestone(starsBefore,totalStars);
+}
+
+function buildStreak(id){
+  const div=document.getElementById(id);
+  div.innerHTML='';
+  const show=Math.min(words.length,20);
+  for(let i=0;i<show;i++){
+    const d=document.createElement('div');
+    d.className='streak-dot'+(streakResults[i]===true?' right':streakResults[i]===false?' wrong':'');
+    div.appendChild(d);
+  }
+}
+
+function showResults(){
+  const pct=Math.round(score/words.length*100);
+  document.getElementById('res-emoji').textContent=pct===100?'🌟🌟🌟':pct>=70?'⭐⭐':'⭐';
+  document.getElementById('res-msg').textContent=
+    pct===100?'Täydellinen! Olet superjulma tähti! 🐴💫':
+    pct>=80?'Hienosti tehty! Loistavaa! 💖':
+    pct>=50?'Hyvä yritys! Kokeile uudelleen! 💪':
+    'Harjoittele lisää, onnistut! 🌷';
+  const box=document.getElementById('res-score-box');
+  box.style.borderColor=pct>=70?'#2ECC71':'#E74C3C';
+  document.getElementById('res-score').textContent=score+'/'+words.length;
+  document.getElementById('res-score').style.color=pct>=70?'#2ECC71':'#E74C3C';
+  document.getElementById('res-stars-total').textContent=totalStars;
+  showScreen('results');
+  if(pct===100)bigSparkle();
+}
+
+// MILESTONES
+function checkMilestone(before,after){
+  MILESTONES.forEach(m=>{
+    if(!shownMilestones.has(m.at)&&before<m.at&&after>=m.at){
+      shownMilestones.add(m.at);
+      setTimeout(()=>showMilestone(m),600);
+    }
+  });
+}
+function showMilestone(m){
+  document.getElementById('ms-emoji').textContent=m.emoji;
+  const t=document.getElementById('ms-title');t.textContent=m.title;t.style.color='white';
+  const p=document.getElementById('ms-msg');p.textContent=m.msg;p.style.color='rgba(255,255,255,0.92)';
+  document.getElementById('milestone-box').style.background=m.bg;
+  const btn=document.getElementById('ms-close-btn');btn.textContent=m.btnTxt;btn.style.background=m.btnBg;
+  const fe=document.getElementById('floating-emojis');fe.innerHTML='';
+  m.floaters.forEach((emoji,i)=>{
+    const el=document.createElement('div');el.className='fe';el.textContent=emoji;
+    el.style.left=(3+Math.random()*94)+'%';el.style.bottom='-5px';
+    el.style.animationDelay=(i*0.22)+'s';el.style.animationDuration=(2.2+Math.random()*1.5)+'s';
+    fe.appendChild(el);
+  });
+  document.getElementById('milestone-overlay').classList.add('show');
+  bigSparkle();
+  if(m.at>=50)setTimeout(bigSparkle,500);
+  if(m.at>=100){setTimeout(bigSparkle,1000);setTimeout(bigSparkle,1500);}
+}
+function closeMilestone(){document.getElementById('milestone-overlay').classList.remove('show');}
+
+// SPARKLE
+function sparkle(){
+  const el=document.getElementById('sparkles');
+  const emojis=['✨','⭐','💖','🌟','💫','🎀','🌸'];
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div');d.className='sparkle-el';
+    d.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    d.style.left=(8+Math.random()*84)+'%';d.style.top=(8+Math.random()*84)+'%';
+    d.style.animationDelay=(Math.random()*0.45)+'s';d.style.fontSize=(16+Math.random()*18)+'px';
+    el.appendChild(d);setTimeout(()=>d.remove(),1600);
+  }
+}
+function bigSparkle(){for(let i=0;i<5;i++)setTimeout(sparkle,i*220);}
+
+// UTILS
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5);}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+function goHome(){showScreen('home');}
+function updateStars(){
+  document.getElementById('stars-count').textContent=totalStars;
+  const b=document.getElementById('stars-badge');b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');
+}
+
+buildHome();
+</script>
+
+
+</body></html>
